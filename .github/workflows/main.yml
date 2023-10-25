@@ -1,0 +1,47 @@
+name: CI-CD
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+  
+jobs:
+  CI:
+    runs-on: alpine:latest
+    steps:
+    - name: checkout do repositorio
+      uses: actions/checkout@v4.1.1
+    - name: Docker Login
+      uses: docker/login-action@v3.0.0
+      with:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PWD }}
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v5.0.0
+      with:
+        context: ./kube-news/src
+        file: ./kube-news/src/Dockerfile
+        push: true
+        tags: 
+          squarca/kube-news:${{ github.run_number }}
+  CD:
+    runs-on: ubuntu:latest
+    needs: [CI]
+    steps:
+    - name: checkout do repositorio
+      uses: actions/checkout@v4.1.1
+    - name: Configuração da credencial da AWS
+      uses: aws-action/configure-aws-credentials@v4
+      with:
+        aws-acess-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    - name: Configurar o kubeconfig
+      run: aws eks update-kubeconfig --name cluster-teste-eks --region us-east-1
+    - name: Deploy to Kubernetes cluster
+      uses: Azure/k8s-deploy@v4.9
+      with:
+        manifests:
+          ./kube-news/k8s/deployment.yaml
+        images:
+          squarca/kube-news:${{ github.run_number }}
