@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .password-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .banner {
+            background-image: url('https://thumbs.dreamstime.com/z/cadeado-centrado-em-elementos-de-hud-no-conceito-seguran%C3%A7a-e-tecnologia-da-informa%C3%A7%C3%A3o-do-projeto-banner-verde-fundo-c%C3%B3digo-231129234.jpg?w=2048');
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+            padding: 50px 0;
+        }
+
+        #password-header {
+            font-size: 24px;
+        }
+
+        #generate-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .password {
+            font-size: 20px;
+            margin-top: 10px;
+        }
+
+        #footer {
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        <h1>Password Generator</h1>
+    </div>
+
+    <div class="password-container">
+        <p id="password-header">Selecione quantos caracteres voce deseja que a sua senha contenha:</p>
+        <input type="checkbox" id="char8" class="charCheckbox" value="8"> 8 caracteres
+        <input type="checkbox" id="char12" class="charCheckbox" value="12"> 12 caracteres
+        <input type="checkbox" id="char16" class="charCheckbox" value="16"> 16 caracteres
+        <input type="checkbox" id="char24" class="charCheckbox" value="24"> 24 caracteres
+        <button id="generate-button">Gerar Senhas</button>
+        <div id="passwords"></div>
+    </div>
+
+    <div id="footer">
+        Password Generator - Criado por Alberto Squarca em JS
+    </div>
+
+    <script>
+        var checkboxes = document.querySelectorAll('.charCheckbox');
+
+        checkboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                checkboxes.forEach(function (otherCheckbox) {
+                    if (otherCheckbox !== checkbox) {
+                        otherCheckbox.checked = false;
+                    }
+                });
+            });
+        });
+
+        document.getElementById('generate-button').addEventListener('click', function () {
+            var selectedChars = [];
+            var checkboxes = document.querySelectorAll('.charCheckbox:checked');
+            checkboxes.forEach(function (checkbox) {
+                selectedChars.push(parseInt(checkbox.value));
+            });
+
+            var passwords = [];
+            for (var i = 0; i < 5; i++) {
+                var password = generatePassword(selectedChars);
+                passwords.push(password);
+            }
+
+            displayPasswords(passwords);
+        });
+
+        function generatePassword(selectedChars) {
+            var charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            var password = '';
+            for (var i = 0; i < selectedChars[0]; i++) {
+                var randomIndex = Math.floor(Math.random() * charset.length);
+                password += charset.charAt(randomIndex);
+            }
+            return password;
+        }
+
+        function displayPasswords(passwords) {
+            var passwordsContainer = document.getElementById('passwords');
+            passwordsContainer.innerHTML = '';
+            passwords.forEach(function (password) {
+                var passwordDiv = document.createElement('div');
+                passwordDiv.className = 'password';
+                passwordDiv.textContent = password;
+                passwordsContainer.appendChild(passwordDiv);
+            });
+        }
+    </script>
+</body>
+</html>

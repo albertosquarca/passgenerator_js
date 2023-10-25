@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  app-passgen
+  namespace: passgen
+  labels:
+    app:  app-passgen
+spec:
+  selector:
+    matchLabels:
+      app: app-passgen
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  app-passgen
+    spec:
+      containers:
+      - name:  app-passgen
+        image:  squarca/passgen_js:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
+          name: web
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-passgen
+  namespace: passgen
+spec:
+  selector:
+    app: app-passgen
+  type: ClusterIP
+  ports:
+  - name: app-passgen
+    protocol: TCP
+    port: 80
+    targetPort: 80
