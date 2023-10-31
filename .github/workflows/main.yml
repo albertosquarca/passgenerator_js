@@ -19,8 +19,8 @@ jobs:
     - name: Build and push Docker images
       uses: docker/build-push-action@v5.0.0
       with:
-        context: passgenerator_js/app
-        file: ./Dockerfile
+        context: app
+        file: Dockerfile
         push: true
         tags: | 
           squarca/passgenerator_js:${{ github.run_number }}
