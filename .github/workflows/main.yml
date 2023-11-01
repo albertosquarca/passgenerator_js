@@ -26,7 +26,7 @@ jobs:
           squarca/passgenerator_js:${{ github.run_number }}
           squarca/passgenerator_js:latest
   CD:
-    runs-on: ubuntu:latest
+    runs-on: self-hosted
     needs: [CI]
     steps:
     - name: checkout do repositorio
@@ -43,6 +43,7 @@ jobs:
       uses: Azure/k8s-deploy@v4.9
       with:
         manifests:
-          ./kube-news/k8s/deployment.yaml
+          ./arquivos_k8s/deployment.yaml
+          ./arquivos_k8s/ingress.yaml
         images:
           squarca/kube-news:${{ github.run_number }}
