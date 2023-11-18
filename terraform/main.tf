@@ -70,3 +70,30 @@ resource "aws_key_pair" "key_rsa" {
   key_name   = "chave-rsa"
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC59oeWFmnYUsww0d4kmTNryTSAGFEqzoaHPVgpjV89b3uLexd4JDWlGtDb9WFMAoY3d2WJySSCY21ZW68WEi7GoqfRd6C4ldfGRDVJZYhPSgFTSECtiJ5wgakpghkkUnhsvRZUfSf182nPQfB41v4Xiq1OqHMsoGwFccQiVJW8WhvFmvDDOEYIzVLvqYgBPJoXF1ZXbYU855kjjIe3Hv4PpabHh8Ts3pNvBZwHM3LSiklkV2G5Dao0xa3U5KygGCcAIMFhO9N4slqX0XRYB/bX+2URn0hN02x+MKOtt3ECx70hd3scc4izeMM2+C7sB7is35DdsJ6LXI88tHr8yFbdB5rmcecNLMpqpUFAdRDA6bYS8ga2rHDCHPbS+/V5GUHEC7lCktMSjTwz8muJlDLUg+LuyNWKW3o22vTVgKwQF2Qt6PrOGjQ2osKih4C86gWCrE1bJVJqvcVDn80mrOaNVfAxdsazgLWzEUI7itbTHHhH8ay08a1b7TyA9e8KtZk= alberto@Beto-Note"
 }
+
+resource "aws_security_group" "allow_tls" {
+  name        = "allow_tls"
+  description = "Allow TLS inbound traffic"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description      = "TLS from VPC"
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    cidr_blocks      = [aws_vpc.main.cidr_block]
+    ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = {
+    Name = "allow_tls"
+  }
+}
